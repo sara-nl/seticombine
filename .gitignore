@@ -1,0 +1,25 @@
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar
+*.tar.gz
+
+# Eclipse files
+.classpath
+.project
+
+# Generated files
+*.class
+bin/
+gen/
+
+/target
+/.settings/**
+/.project
+/.classpath
+/*components*
+
+# Misc. files
+*.log
