@@ -15,7 +15,7 @@ dataPath=$1
 mnemonic=$2
 username=$3
 
-eval $(/cvmfs/softdrive.nl/mathijsk/hathi-client/bin/env.sh)
+eval $(/cvmfs/softdrive.nl/"$username"/hathi-client/bin/env.sh)
 kinit -k -t seti.keytab "$username"@CUA.SURFSARA.NL
 
 hdfs dfs -get /data/private/seti/seticombine .
