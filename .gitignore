@@ -10,11 +10,18 @@
 .classpath
 .project
 
+# Idea files 
+*.iml
+.idea
+
+# Gradle files
+.gradle
+
 # Generated files
 *.class
 bin/
 gen/
-
+build
 /target
 /.settings/**
 /.project
