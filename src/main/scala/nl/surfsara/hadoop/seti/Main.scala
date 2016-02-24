@@ -26,7 +26,7 @@ object Main extends Logging {
 
   def main(args: Array[String]): Unit = {
     info("Starting seticombine...")
-    info("Arguments: " + args)
+    info("Arguments: " + args.deep.mkString(" "))
     if (args.length != 3) {
       info("Not enough arguments..")
       System.exit(1)
@@ -53,8 +53,11 @@ object Main extends Logging {
     val outFile = new File(inDirectory.getAbsolutePath + "/" + mnemonic + ".json")
     val bw = new BufferedWriter(new FileWriter(outFile))
     val jsonIterator = inDirectory.listFiles(FilenameExtensionFilter(".dat")).map(processDatFile(_))
-    for (json <- jsonIterator) {
-      bw.write(json.toString() + "\n")
+    for (jsonList <- jsonIterator) {
+      for (json <- jsonList) {
+        debug("Writing json: \n " + json.toString(2))
+        bw.write(json.toString() + "\n")
+      }
     }
     bw.flush()
     bw.close()
@@ -80,7 +83,7 @@ object Main extends Logging {
 
     val numHeaderLines = 5 // Of the file above there are five lines we are interested in
     val headerKeys: List[String] = List("fid", "source", "mjd", "ra", "dec", "deltat", "deltaf", "ra_tile", "dec_tile", "ra_tab", "dec_tab", "pulsar_run", "pulsar_found",
-      "pulsar_dm", "pulsar_snr", "rfi_level", "n_stations", "n_candidates")
+        "pulsar_dm", "pulsar_snr", "rfi_level", "n_stations", "n_candidates")
     val skipTokens: Set[String] = Set("File", "ID", "MJD", "RA", "DEC", "DELTAT", "DELTAF(Hz)", "DOPPLER", "Source",
       "RA_tile", "DEC_tile", "RA_TAB", "DEC_TAB", "Pulsar_run", "Pulsar_found", "Pulsar_DM", "Pulsar_SNR", "RFI_level", "N_stations", "N_candidates")
     val headerVals: List[String] = sourceLines.take(numHeaderLines).map(_.replaceAll(":", " ")).flatMap(_.split("\\s+")).toList.filterNot(

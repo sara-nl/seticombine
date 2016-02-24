@@ -24,7 +24,7 @@ eval $("$HATHI_PATH"/bin/env.sh)
 kinit -k -t "$username".keytab "$username"@CUA.SURFSARA.NL
 
 hdfs dfs -get /data/private/seti/seticombine .
-chmod +x -R seticombine
+chmod -R +x seticombine
 
 hdfs dfs -mkdir /data/private/seti/output/"$mnemonic"
 seticombine/bin/seticombine $mnemonic $dataPath /data/private/seti/output

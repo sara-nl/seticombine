@@ -10,7 +10,7 @@ class TarGenerator(val destOutputStream: OutputStream) extends Logging {
   val tarGzOut = new TarArchiveOutputStream(destOutputStream)
 
   def closeTar() {
-    tarGzOut.closeArchiveEntry()
+    //    tarGzOut.closeArchiveEntry()
     tarGzOut.close()
   }
 
@@ -38,7 +38,7 @@ class TarGenerator(val destOutputStream: OutputStream) extends Logging {
       tarGzOut.closeArchiveEntry()
     } else {
       tarGzOut.closeArchiveEntry()
-      if(nextDepth < 2 || recursive) {
+      if (nextDepth < 2 || recursive) {
         f.listFiles(filter).foreach(f => {
           addFileToTar(f.getAbsolutePath, entryName + "/", recursive, filter, nextDepth)
         })
