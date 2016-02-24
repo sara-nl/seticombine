@@ -1,9 +1,17 @@
-apply plugin: 'scala'
-apply plugin: 'application'
+apply plugin: "scala"
+apply plugin: "application"
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-mainClassName = 'nl.surfsara.hadoop.seti.CombineDatFiles'
+group = "nl.surfsara"
+
+mainClassName = "nl.surfsara.hadoop.seti.Main"
+
+configurations {
+    scalaCompiler
+}
+
+tasks.withType(ScalaCompile) {
+    scalaClasspath = configurations.scalaCompiler
+}
 
 repositories {
     mavenCentral()
@@ -11,16 +19,36 @@ repositories {
 }
 
 dependencies {
-    compile 'org.scala-lang:scala-library:2.10.6'
-    compile 'com.typesafe.scala-logging:scala-logging_2.11:3.1.0'
-    compile 'org.json:json:20151123'
-    compile 'org.apache.spark:spark-core_2.10:1.6.0'
-    compile 'org.apache.spark:spark-sql_2.10:1.6.0'
-    compile 'org.apache.commons:commons-compress:1.10'
-//    compile 'org.apache.hadoop:hadoop-hdfs:2.7.1'
-    compile 'commons-io:commons-io:2.4'
+    scalaCompiler "org.scala-lang:scala-compiler:2.10.6"
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.scalatest:scalatest_2.10:2.2.5'
+    compile "org.scala-lang:scala-library:2.10.6"
+    compile "org.clapper:grizzled-slf4j_2.10:1.0.2"
+    compile "ch.qos.logback:logback-core:1.1.5"
+    compile "org.json:json:20151123"
+    compile "org.apache.spark:spark-core_2.10:1.6.0"
+    compile "org.apache.spark:spark-sql_2.10:1.6.0"
+    compile "org.apache.commons:commons-compress:1.10"
+    compile "commons-io:commons-io:2.4"
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.scalatest:scalatest_2.10:2.2.5"
+    testCompile "org.clapper:grizzled-slf4j_2.10:1.0.2"
+    testCompile "ch.qos.logback:logback-core:1.1.5"
+    testCompile "org.slf4j:slf4j-api:1.7.10"
+    testCompile "org.slf4j:slf4j-log4j12:1.7.10"
+
 }
 
+task spec(dependsOn: ['testClasses'], type: JavaExec) {
+  main = 'org.scalatest.tools.Runner'
+  args = ['-R', 'build/classes/test', '-o']
+  classpath = sourceSets.test.runtimeClasspath
+}
+
+startScripts{
+    String scriptText = new File("src/main/resources/unix_startscript.template").text
+    unixStartScriptGenerator.template = resources.text.fromString(scriptText)
+    doLast{
+        delete windowsScript
+    }
+}
