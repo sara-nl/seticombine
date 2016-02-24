@@ -138,8 +138,15 @@ object Main extends Logging {
   def fil2HDFS(inDirectory: File, hdfsBaseDir: String, mnemonic: String) {
     val hdfsOut = SparkHadoopCtxt.hdfsAccess.getOutputStreamForPath(hdfsBaseDir + "/" + mnemonic + "/" + mnemonic + "_HighRes.fil.gz")
     val gzOut = new GzipCompressorOutputStream(hdfsOut)
-    IOUtils.copyLarge(new FileInputStream(new File(inDirectory.getAbsolutePath + "/" + mnemonic + "_HighRes.fil")), hdfsOut)
-    hdfsOut.flush()
-    hdfsOut.close()
+    val fileList = inDirectory.listFiles(FilenameExtensionFilter("_HighRes.fil")).toList
+    if(fileList.size == 1) {
+      IOUtils.copyLarge(new FileInputStream(fileList(0)), hdfsOut)
+      hdfsOut.flush()
+      hdfsOut.close()
+    } else if (fileList.size > 1){
+      throw new Exception("More than one .fil file found")
+    } else {
+      throw new Exception("No .fil file found")
+    }
   }
 }
