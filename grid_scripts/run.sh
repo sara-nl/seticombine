@@ -4,7 +4,7 @@
 #
 # Assumptions:
 # /abs/path/to/data/$mnemonic_HighRes.fil exists, .dats and .logs here as well
-# seti.keytab is present in same location as this script
+# username.keytab is present in same location as this script
 #
 # HDFS view:
 # /data/private/setinl/$mnemonic/$mnemonic_HighRes.fil.gz will be created
@@ -15,13 +15,18 @@ dataPath=$1
 mnemonic=$2
 username=$3
 
-eval $(/cvmfs/softdrive.nl/"$username"/hathi-client/bin/env.sh)
-kinit -k -t seti.keytab "$username"@CUA.SURFSARA.NL
+if [ -z ${HATHI_PATH} ]; then
+    HATHI_PATH=/cvmfs/softdrive.nl/"$username"/hathi-client
+fi
+echo $HATHI_PATH
+
+eval $("$HATHI_PATH"/bin/env.sh)
+kinit -k -t "$username".keytab "$username"@CUA.SURFSARA.NL
 
 hdfs dfs -get /data/private/seti/seticombine .
 chmod +x -R seticombine
 
-#hdfs dfs -mkdir /data/private/seti/output/"$mnemonic"
+hdfs dfs -mkdir /data/private/seti/output/"$mnemonic"
 seticombine/bin/seticombine $mnemonic $dataPath /data/private/seti/output
 
 if [[ "$?" != 0 ]]; then
