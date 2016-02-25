@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils
 import org.apache.hadoop.security.UserGroupInformation
 import org.apache.spark.deploy.SparkHadoopUtil
 import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.types._
 import org.apache.spark.{SparkConf, SparkContext}
 import org.json.JSONObject
 
@@ -123,7 +124,36 @@ object Main extends Logging {
 
   def save2Parquet(jsonFile: File, hdfsBaseDir: String, mnemonic: String) {
     val sqlCtxt = new SQLContext(SparkHadoopCtxt.sc)
-    val df = sqlCtxt.read.json("file://" + jsonFile.getAbsolutePath)
+
+    val schema = StructType(Array(
+      StructField("fid", StringType, false),
+      StructField("freq_start", DoubleType, false),
+      StructField("dec", DoubleType, false),
+      StructField("ra_tile", DoubleType, false),
+      StructField("pulsar_run", IntegerType, false),
+      StructField("deltaf", DoubleType, false),
+      StructField("ra_tab", DoubleType, false),
+      StructField("source", StringType, false),
+      StructField("corrected_freq", DoubleType, false),
+      StructField("pulsar_dm", DoubleType, false),
+      StructField("uncorrected_freq", DoubleType, false),
+      StructField("drift_rate", DoubleType, false),
+      StructField("deltat", DoubleType, false),
+      StructField("dec_tile", DoubleType, false),
+      StructField("hitnum", StringType, false),
+      StructField("mjd", DoubleType, false),
+      StructField("rfi_level", DoubleType, false),
+      StructField("freq_end", DoubleType, false),
+      StructField("index", DoubleType, false),
+      StructField("ra", DoubleType, false),
+      StructField("dec_tab", DoubleType, false),
+      StructField("snr", DoubleType, false),
+      StructField("n_stations", IntegerType, false),
+      StructField("pulsar_snr", DoubleType, false),
+      StructField("pulsar_found", IntegerType, false)
+    ))
+
+    val df = sqlCtxt.read.schema(schema).json("file://" + jsonFile.getAbsolutePath)
     df.printSchema()
     df.write.parquet(hdfsBaseDir + "/" + mnemonic + "/parquet")
   }
@@ -139,11 +169,11 @@ object Main extends Logging {
     val hdfsOut = SparkHadoopCtxt.hdfsAccess.getOutputStreamForPath(hdfsBaseDir + "/" + mnemonic + "/" + mnemonic + "_HighRes.fil.gz")
     val gzOut = new GzipCompressorOutputStream(hdfsOut)
     val fileList = inDirectory.listFiles(FilenameExtensionFilter("_HighRes.fil")).toList
-    if(fileList.size == 1) {
+    if (fileList.size == 1) {
       IOUtils.copyLarge(new FileInputStream(fileList(0)), hdfsOut)
       hdfsOut.flush()
       hdfsOut.close()
-    } else if (fileList.size > 1){
+    } else if (fileList.size > 1) {
       throw new Exception("More than one .fil file found")
     } else {
       throw new Exception("No .fil file found")
