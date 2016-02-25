@@ -106,7 +106,7 @@ object Main extends Logging {
       tupleList => tupleList.map({
         case ("fid", v) => ("fid", v)
         case ("source", v) => ("source", v)
-        case ("hitnum", v) => ("hitnum", v)
+        case ("hitnum", v) => ("hitnum", v.toInt)
         case (k, v) => (k, v.toDouble)
       }))
 
@@ -140,7 +140,7 @@ object Main extends Logging {
       StructField("drift_rate", DoubleType, false),
       StructField("deltat", DoubleType, false),
       StructField("dec_tile", DoubleType, false),
-      StructField("hitnum", StringType, false),
+      StructField("hitnum", IntegerType, false),
       StructField("mjd", DoubleType, false),
       StructField("rfi_level", DoubleType, false),
       StructField("freq_end", DoubleType, false),
