@@ -12,7 +12,8 @@ import org.apache.spark.sql.types._
 import org.apache.spark.{SparkConf, SparkContext}
 import org.json.JSONObject
 
-import scala.io.{BufferedSource, Source}
+import scala.io.Source
+import scala.util.control.NonFatal
 
 object Main extends Logging {
 
@@ -42,8 +43,8 @@ object Main extends Logging {
         datsLogs2HDFS(inDirectory, hdfsBaseDir, mnemonic)
         fil2HDFS(inDirectory, hdfsBaseDir, mnemonic)
       } catch {
-        case t: Throwable => {
-          error(t.getMessage, t)
+        case NonFatal(e) => {
+          error(e.getMessage, e)
           System.exit(1)
         }
       }
