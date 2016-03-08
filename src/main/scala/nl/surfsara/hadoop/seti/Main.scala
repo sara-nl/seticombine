@@ -70,7 +70,7 @@ object Main extends Logging {
     debug("Processing: " + inFile)
     val source = Source.fromFile(inFile)
     val sourceLines = source.getLines().filterNot(
-      line => line.startsWith("---") || line.contains("candidates") || line.contains("Top Hit #")
+      line => line.startsWith("---") || line.contains("Top Hit #")
     )
 
     // Sample file: this top part will become header
@@ -83,7 +83,7 @@ object Main extends Logging {
     //  --------------------------
     //  N_candidates: 7416
 
-    val numHeaderLines = 5 // Of the file above there are five lines we are interested in
+    val numHeaderLines = 6 // Of the file above there are five lines we are interested in
     val headerKeys: List[String] = List("fid", "source", "mjd", "ra", "dec", "deltat", "deltaf", "ra_tile", "dec_tile", "ra_tab", "dec_tab", "pulsar_run", "pulsar_found",
         "pulsar_dm", "pulsar_snr", "rfi_level", "n_stations", "n_candidates")
     val skipTokens: Set[String] = Set("File", "ID", "MJD", "RA", "DEC", "DELTAT", "DELTAF(Hz)", "DOPPLER", "Source",
@@ -151,7 +151,8 @@ object Main extends Logging {
       StructField("snr", DoubleType, false),
       StructField("n_stations", IntegerType, false),
       StructField("pulsar_snr", DoubleType, false),
-      StructField("pulsar_found", IntegerType, false)
+      StructField("pulsar_found", IntegerType, false),
+      StructField("n_candidates", IntegerType, false)
     ))
 
     val df = sqlCtxt.read.schema(schema).json("file://" + jsonFile.getAbsolutePath)
