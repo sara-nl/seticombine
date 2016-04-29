@@ -74,20 +74,21 @@ object Main extends Logging {
     )
 
     // Sample file: this top part will become header
-    //  File ID: L241833_SAP001_B001_P002_HighRes_0
-    //  Source: GJ411   MJD: 56889.552083333343 RA: 59.80000000 DEC: 6.60000000 DELTAT:   0.671089      DELTAF(Hz):   1.497456
-    //  --------------------------
-    //  RA_tile:2.899020        DEC_tile:0.693739       RA_TAB:2.849232 DEC_TAB:0.588790
-    //  Pulsar_run:0    Pulsar_found:0  Pulsar_DM:0.000000      Pulsar_SNR:0.000000
-    //  RFI_level:0.168717      N_stations:22
-    //  --------------------------
-    //  N_candidates: 7416
+    //    File ID: L241833_SAP001_B001_P002_HighRes_2
+    //    Source: GJ411   MJD: 56889.552083333343 RA: 59.80000000 DEC: 6.60000000 DELTAT:   0.671089      DELTAF(Hz):   1.497456
+    //    --------------------------
+    //    RA_tile:2.899020        DEC_tile:0.693739       RA_beam:2.894352        DEC_beam:0.627793       RA_TAB:2.849232 DEC_TAB:0.588790
+    //    Pulsar_run:0    Pulsar_found:0  Pulsar_DM:0.000000      Pulsar_SNR:0.000000
+    //    RFI_level:0.000000      N_stations:22
+    //    Mean_SEFD:0.0   psrflux_Sens:0.0
+    //    --------------------------
+    //    N_candidates: 63393
 
-    val numHeaderLines = 6 // Of the file above there are five lines we are interested in
-    val headerKeys: List[String] = List("fid", "source", "mjd", "ra", "dec", "deltat", "deltaf", "ra_tile", "dec_tile", "ra_tab", "dec_tab", "pulsar_run", "pulsar_found",
-        "pulsar_dm", "pulsar_snr", "rfi_level", "n_stations", "n_candidates")
+    val numHeaderLines = 7 // Of the file above there are six lines we are interested in
+    val headerKeys: List[String] = List("fid", "source", "mjd", "ra", "dec", "deltat", "deltaf", "ra_tile", "dec_tile", "ra_beam", "dec_beam", "ra_tab", "dec_tab", "pulsar_run", "pulsar_found",
+        "pulsar_dm", "pulsar_snr", "rfi_level", "n_stations", "mean_sefd", "psrflux_sens", "n_candidates")
     val skipTokens: Set[String] = Set("File", "ID", "MJD", "RA", "DEC", "DELTAT", "DELTAF(Hz)", "DOPPLER", "Source",
-      "RA_tile", "DEC_tile", "RA_TAB", "DEC_TAB", "Pulsar_run", "Pulsar_found", "Pulsar_DM", "Pulsar_SNR", "RFI_level", "N_stations", "N_candidates")
+      "RA_tile", "DEC_tile", "RA_beam", "DEC_beam", "RA_TAB", "DEC_TAB", "Pulsar_run", "Pulsar_found", "Pulsar_DM", "Pulsar_SNR", "RFI_level", "N_stations", "Mean_SEFD", "psrflux_Sens", "N_candidates")
     val headerVals: List[String] = sourceLines.take(numHeaderLines).map(_.replaceAll(":", " ")).flatMap(_.split("\\s+")).toList.filterNot(
       token => skipTokens.contains(token)
     )
@@ -95,14 +96,15 @@ object Main extends Logging {
     val header = headerKeys.zip(headerVals)
 
     // Sample file: the rest will be prefixed with the header
-    //  N_candidates: 7416
-    //  --------------------------
-    //  Top Hit #       Drift Rate      SNR     Uncorrected Frequency   Corrected Frequency     Index   freq_start      freq_end
-    //  --------------------------
-    //  001       0.027060        7.459188          123.988742      123.988742  72081       123.985675      123.991807
-    //  002      -5.210030        5.126469          124.021152      124.021152  93724       124.018085      124.024217
+    //    N_candidates: 63393
+    //    --------------------------
+    //    Top Hit #       Drift Rate      SNR     Uncorrected Frequency   Corrected Frequency     Index   freq_start      freq_end        SEFD    SEFD_freq
+    //      --------------------------
+    //    001      -0.004163        6.913224          124.295984      124.295984  6921        124.294451      124.297516  0.0           0.000000
+    //    002      -0.004163       12.377030          124.299051      124.299051  8969        124.297518      124.300583  0.0           0.000000
 
-    val valueKeys = List("hitnum", "drift_rate", "snr", "uncorrected_freq", "corrected_freq", "index", "freq_start", "freq_end")
+
+    val valueKeys = List("hitnum", "drift_rate", "snr", "uncorrected_freq", "corrected_freq", "index", "freq_start", "freq_end", "sefd", "sefd_freq")
     val headerAndVals = sourceLines.map(_.split("\\s+")).map(header ++ valueKeys.zip(_)).map(
       tupleList => tupleList.map({
         case ("fid", v) => ("fid", v)
@@ -126,6 +128,41 @@ object Main extends Logging {
   def save2Parquet(jsonFile: File, hdfsBaseDir: String, mnemonic: String) {
     val sqlCtxt = new SQLContext(SparkHadoopCtxt.sc)
 
+    // JSON Structure:
+    //    "fid": "L241833_SAP001_B001_P002_HighRes_2",
+    //    "freq_start": 124.303853,
+    //    "dec": 6.6,
+    //    "ra_tile": 2.89902,
+    //    "pulsar_run": 0,
+    //    "deltaf": 1.497456,
+    //    "ra_tab": 2.849232,
+    //    "ra_beam": 2.894352,
+    //    "source": "GJ411",
+    //    "corrected_freq": 124.305387,
+    //    "pulsar_dm": 0,
+    //    "uncorrected_freq": 124.305387,
+    //    "drift_rate": 1.321762,
+    //    "n_candidates": 63393,
+    //    "mean_sefd": 0,
+    //    "sefd_freq": 0,
+    //    "deltat": 0.671089,
+    //    "dec_tile": 0.693739,
+    //    "psrflux_sens": 0,
+    //    "hitnum": 3,
+    //    "sefd": 0,
+    //    "mjd": 56889.55208333334,
+    //    "rfi_level": 0,
+    //    "freq_end": 124.306919,
+    //    "index": 13200,
+    //    "ra": 59.8,
+    //    "dec_beam": 0.627793,
+    //    "dec_tab": 0.58879,
+    //    "snr": 5.00737,
+    //    "n_stations": 22,
+    //    "pulsar_snr": 0,
+    //    "pulsar_found": 0
+
+
     val schema = StructType(Array(
       StructField("fid", StringType, false),
       StructField("freq_start", DoubleType, false),
@@ -134,25 +171,31 @@ object Main extends Logging {
       StructField("pulsar_run", IntegerType, false),
       StructField("deltaf", DoubleType, false),
       StructField("ra_tab", DoubleType, false),
+      StructField("ra_beam", DoubleType, false),
       StructField("source", StringType, false),
       StructField("corrected_freq", DoubleType, false),
       StructField("pulsar_dm", DoubleType, false),
       StructField("uncorrected_freq", DoubleType, false),
       StructField("drift_rate", DoubleType, false),
+      StructField("n_candidates", IntegerType, false),
+      StructField("mean_sefd", DoubleType, false),
+      StructField("sefd_freq", DoubleType, false),
       StructField("deltat", DoubleType, false),
       StructField("dec_tile", DoubleType, false),
+      StructField("psrflux_sens", DoubleType, false),
       StructField("hitnum", IntegerType, false),
+      StructField("sefd", DoubleType, false),
       StructField("mjd", DoubleType, false),
       StructField("rfi_level", DoubleType, false),
       StructField("freq_end", DoubleType, false),
       StructField("index", DoubleType, false),
       StructField("ra", DoubleType, false),
+      StructField("dec_beam", DoubleType, false),
       StructField("dec_tab", DoubleType, false),
       StructField("snr", DoubleType, false),
       StructField("n_stations", IntegerType, false),
       StructField("pulsar_snr", DoubleType, false),
-      StructField("pulsar_found", IntegerType, false),
-      StructField("n_candidates", IntegerType, false)
+      StructField("pulsar_found", IntegerType, false)
     ))
 
     val df = sqlCtxt.read.schema(schema).json("file://" + jsonFile.getAbsolutePath)

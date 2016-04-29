@@ -21,9 +21,9 @@ class Dat2JsonSpec extends UnitSpec {
     }
     assert(jsonList.size == 3)
     val hitnumDriftRate = jsonList.map(jsonObj => (jsonObj.get("hitnum"), jsonObj.get("drift_rate")))
-    assert(hitnumDriftRate.contains((1, 0.000000)))
-    assert(hitnumDriftRate.contains((2, -0.341368)))
-    assert(hitnumDriftRate.contains((3, -0.214396)))
+    assert(hitnumDriftRate.contains((1, -0.004163)))
+    assert(hitnumDriftRate.contains((2, -0.004163)))
+    assert(hitnumDriftRate.contains((3, 1.321762)))
     assert(!hitnumDriftRate.contains((5, -0.214396)))
     source.close()
   }

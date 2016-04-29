@@ -1,14 +1,15 @@
-File ID: L241833_SAP001_B001_P002_HighRes_23 
-Source: GJ411	MJD: 56889.552083333343	RA: 59.80000000	DEC: 6.60000000	DELTAT:   0.671089	DELTAF(Hz):   1.497456
+File ID: L241833_SAP001_B001_P002_HighRes_2
+Source: GJ411   MJD: 56889.552083333343 RA: 59.80000000 DEC: 6.60000000 DELTAT:   0.671089      DELTAF(Hz):   1.497456
 --------------------------
-RA_tile:2.899020	DEC_tile:0.693739	RA_TAB:2.849232	DEC_TAB:0.588790
-Pulsar_run:0	Pulsar_found:0	Pulsar_DM:0.000000	Pulsar_SNR:0.000000
-RFI_level:0.168717	N_stations:22
+RA_tile:2.899020        DEC_tile:0.693739       RA_beam:2.894352        DEC_beam:0.627793       RA_TAB:2.849232 DEC_TAB:0.588790
+Pulsar_run:0    Pulsar_found:0  Pulsar_DM:0.000000      Pulsar_SNR:0.000000
+RFI_level:0.000000      N_stations:22
+Mean_SEFD:0.0   psrflux_Sens:0.0
 --------------------------
-N_candidates: 4602638 
+N_candidates: 63393
 --------------------------
-Top Hit # 	Drift Rate 	SNR 	Uncorrected Frequency 	Corrected Frequency 	Index 	freq_start 	freq_end 	
+Top Hit #       Drift Rate      SNR     Uncorrected Frequency   Corrected Frequency     Index   freq_start      freq_end        SEFD    SEFD_freq
 --------------------------
-001	  0.000000	  5.598343	    128.493256	    128.493256	65536	    128.490189	    128.496321	
-002	 -0.341368	  5.235344	    128.510185	    128.510185	76841	    128.507118	    128.513250	
-003	 -0.214396	 10.377885	    128.553160	    128.553160	105540	    128.550093	    128.556226	
+001      -0.004163        6.913224          124.295984      124.295984  6921        124.294451      124.297516  0.0           0.000000
+002      -0.004163       12.377030          124.299051      124.299051  8969        124.297518      124.300583  0.0           0.000000
+003       1.321762        5.007370          124.305387      124.305387  13200       124.303853      124.306919  0.0           0.000000
