@@ -39,8 +39,8 @@ object Main extends Logging {
 
       try {
         val jsonFile = convertDats2Json(mnemonic, inDirectory)
-        save2Parquet(jsonFile, hdfsBaseDir, mnemonic)
         datsLogs2HDFS(inDirectory, hdfsBaseDir, mnemonic)
+        save2Parquet(jsonFile, hdfsBaseDir, mnemonic)
         fil2HDFS(inDirectory, hdfsBaseDir, mnemonic)
       } catch {
         case NonFatal(e) => {
