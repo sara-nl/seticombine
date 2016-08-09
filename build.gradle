@@ -29,6 +29,7 @@ dependencies {
     compile "org.apache.spark:spark-sql_2.10:1.6.0"
     compile "org.apache.commons:commons-compress:1.10"
     compile "commons-io:commons-io:2.4"
+    compile "org.apache.hadoop:hadoop-client:2.7.1"
 
     testCompile "junit:junit:4.12"
     testCompile "org.scalatest:scalatest_2.10:2.2.5"
