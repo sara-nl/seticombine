@@ -70,7 +70,7 @@ object Main extends Logging {
     debug("Processing: " + inFile)
     val source = Source.fromFile(inFile)
     val sourceLines = source.getLines().filterNot(
-      line => line.startsWith("---") || line.contains("Top Hit #")
+      line => line.startsWith("---") || line.contains("Top Hit #") || line == ""
     )
 
     // Sample file: this top part will become header
@@ -93,7 +93,16 @@ object Main extends Logging {
       token => skipTokens.contains(token)
     )
 
-    val header = headerKeys.zip(headerVals)
+    var patchedHeaderVals = List[String]()
+    if(headerVals.length == 23) {
+      // Assume space in Source value
+      val sourceVals = headerVals.take(3)
+      val correctedVals = List[String](sourceVals(0), sourceVals(1) + " " + sourceVals(2))
+      patchedHeaderVals = correctedVals ++ headerVals.takeRight(20)
+    } else {
+      patchedHeaderVals = headerVals
+    }
+    val header = headerKeys.zip(patchedHeaderVals)
 
     // Sample file: the rest will be prefixed with the header
     //    N_candidates: 63393
