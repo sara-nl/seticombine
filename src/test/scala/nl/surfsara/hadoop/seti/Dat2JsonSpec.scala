@@ -13,7 +13,7 @@ class Dat2JsonSpec extends UnitSpec {
     for (s <- sourcedLines) {
       info(s)
     }
-    val jsonList = Main.processDatFile(sample0).toList
+    val jsonList = DatParser.processDatFile(sample0).toList
     info("Converted json list size: " + jsonList.size)
     info("Converted json objects: ")
     for (json <- jsonList) {
@@ -36,7 +36,7 @@ class Dat2JsonSpec extends UnitSpec {
     for (s <- sourcedLines) {
       info(s)
     }
-    val jsonList = Main.processDatFile(sample0).toList
+    val jsonList = DatParser.processDatFile(sample0).toList
     info("Converted json list size: " + jsonList.size)
     info("Converted json objects: ")
     for (json <- jsonList) {
@@ -58,7 +58,7 @@ class Dat2JsonSpec extends UnitSpec {
     for (s <- sourcedLines) {
       info(s)
     }
-    val jsonList = Main.processDatFile(sample0).toList
+    val jsonList = DatParser.processDatFile(sample0).toList
     info("Converted json list size: " + jsonList.size)
     info("Converted json objects: ")
     for (json <- jsonList) {
@@ -81,7 +81,7 @@ class Dat2JsonSpec extends UnitSpec {
     for (s <- sourced) {
       info(s)
     }
-    val jsonList = Main.processDatFile(sample1).toList
+    val jsonList = DatParser.processDatFile(sample1).toList
     info("Converted json list size: " + jsonList.size)
     assert(jsonList.size == 0)
     source.close()
