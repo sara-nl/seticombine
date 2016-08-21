@@ -3,7 +3,10 @@ apply plugin: "application"
 
 group = "nl.surfsara"
 
-mainClassName = "nl.surfsara.hadoop.seti.Main"
+mainClassName = "nl.surfsara.hadoop.seti.mapreduce.RedoParquet"
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 configurations {
     scalaCompiler
@@ -17,6 +20,7 @@ repositories {
     mavenCentral()
     jcenter()
 }
+
 
 dependencies {
     scalaCompiler "org.scala-lang:scala-compiler:2.10.6"
@@ -38,6 +42,18 @@ dependencies {
     testCompile "org.slf4j:slf4j-api:1.7.10"
     testCompile "org.slf4j:slf4j-log4j12:1.7.10"
 
+}
+
+jar {
+    into('lib'){
+        from configurations.compile
+    }
+    manifest {
+        attributes(
+                'Main-Class': mainClassName,
+                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
+        )
+    }
 }
 
 task spec(dependsOn: ['testClasses'], type: JavaExec) {

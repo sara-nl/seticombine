@@ -9,8 +9,8 @@ import org.apache.hadoop.mapreduce.lib.input.{FileInputFormat, TextInputFormat}
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.mapreduce.{Job, Reducer}
 
-class RedoParquet {
-  def main(args: Array[String]) {
+object RedoParquet {
+  def main(args: Array[String]) : Unit = {
     val conf: Configuration = new Configuration
     conf.set("mapred.task.timeout", "7200000")
     val job: Job = Job.getInstance(conf, "Regenerate json from SETI data archives ...")
