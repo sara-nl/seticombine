@@ -14,9 +14,9 @@ object RedoParquet {
     val conf: Configuration = new Configuration
     conf.set("mapred.task.timeout", "7200000")
     val job: Job = Job.getInstance(conf, "Regenerate json from SETI data archives ...")
-    job.setJarByClass(classOf[VerifyDataArchives])
     FileInputFormat.addInputPath(job, new Path(args(0)))
     FileOutputFormat.setOutputPath(job, new Path(args(1)))
+    job.setJarByClass(RedoParquet.getClass)
     job.setMapperClass(classOf[RedoParquetMapper])
     job.setReducerClass(classOf[Reducer[_, _, _, _]])
     job.setInputFormatClass(classOf[TextInputFormat])
